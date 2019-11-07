@@ -289,48 +289,7 @@
                     <label for="gross-income-input-field"
                       >Date Loan Closed</label
                     >
-                    <div class="input-group mb-2">
-                      <div class="input-group-prepend">
-                        <div class="input-group-text">$</div>
-                      </div>
-                      <input
-                        id="gross-income-input-field"
-                        v-model.number="$v.mortgageLoanAmount.$model"
-                        type="number"
-                        class="form-control"
-                        :class="{
-                          'is-invalid':
-                            $v.mortgageLoanAmount.$error ||
-                            $v.mortgageLoanAmount.$invalid
-                        }"
-                      />
-                      <input
-                        id="gross-income-input-range"
-                        v-model.number="mortgageLoanAmount"
-                        type="range"
-                        class="custom-range"
-                        min="10000"
-                        max="1000000"
-                      />
-                      <div class="invalid-feedback">
-                        <span
-                          v-if="
-                            !$v.mortgageLoanAmount.between ||
-                              !$v.mortgageLoanAmount.required
-                          "
-                          >{{ errorMsgPre }} ${{
-                            Number(
-                              $v.mortgageLoanAmount.$params.between.min
-                            ).toLocaleString()
-                          }}
-                          and ${{
-                            Number(
-                              $v.mortgageLoanAmount.$params.between.max
-                            ).toLocaleString()
-                          }}</span
-                        >
-                      </div>
-                    </div>
+                    <datepicker v-model="loanCloseDate"></datepicker>
                   </div>
                 </div>
                 <div id="result" class="col col-md-6">
@@ -363,24 +322,11 @@
                       >
                         <ul class="list-group">
                           <li class="list-group-item">
-                            One Time Mortgage Payment: ${{
-                              Math.round(totalMonthlyMortgage)
-                            }}
+                            Potential Savings: ${{ Math.round(100) }}
                           </li>
                           <li class="list-group-item">
-                            PMI: ${{ Math.round(monthlyMortgageInsurance) }}
-                          </li>
-                          <li class="list-group-item">
-                            HOA: ${{ Math.round(hoa) }}
-                          </li>
-                          <li class="list-group-item">
-                            Taxes & Insurance: ${{
-                              Math.round(monthlyPropertyTax + monthlyHoi)
-                            }}
-                          </li>
-                          <li class="list-group-item">
-                            Principal & Interest: ${{
-                              Math.round(monthlyPrincipalInterestPayment)
+                            With a one-time extra payment of: ${{
+                              Math.round(100)
                             }}
                           </li>
                         </ul>
@@ -394,24 +340,16 @@
                       >
                         <ul class="list-group">
                           <li class="list-group-item">
-                            Monthly Mortgage Payment: ${{
-                              Math.round(totalMonthlyMortgage)
+                            Potential Savings: ${{ Math.round(100) }}
+                          </li>
+                          <li class="list-group-item">
+                            With an extra monthly payment of: ${{
+                              Math.round(100)
                             }}
                           </li>
                           <li class="list-group-item">
-                            PMI: ${{ Math.round(monthlyMortgageInsurance) }}
-                          </li>
-                          <li class="list-group-item">
-                            HOA: ${{ Math.round(hoa) }}
-                          </li>
-                          <li class="list-group-item">
-                            Taxes & Insurance: ${{
-                              Math.round(monthlyPropertyTax + monthlyHoi)
-                            }}
-                          </li>
-                          <li class="list-group-item">
-                            Principal & Interest: ${{
-                              Math.round(monthlyPrincipalInterestPayment)
+                            Loan repayment period reduced by: ${{
+                              Math.round(100)
                             }}
                           </li>
                         </ul>
@@ -448,50 +386,63 @@
     <div v-if="isSubmitted" id="result-page">
       <div class="col">
         <ul class="list-group">
-          <p>YOU CAN EXPECT TO PAY:</p>
+          <p>YOU CAN EXPECT TO SAVE:</p>
           <li class="list-group-item">
-            Home Purchase Price: ${{ Math.round(homePurchasePrice) }}
+            Total savings in interest: ${{ Math.round(100) }}
           </li>
           <li class="list-group-item">
-            Mortgage Loan Amount: ${{ Math.round(mortgageLoanAmount) }}
+            By paying an extra principal payment
+          </li>
+          <li v-if="tab === 0" class="list-group-item">
+            One-time: ${{ Math.round(100) }}
+          </li>
+          <li v-if="tab === 1" class="list-group-item">
+            Monthly: ${{ Math.round(100) }}
+          </li>
+          <p>INFORMATION ABOUT YOUR CURRENT MORTGAGE:</p>
+          <li class="list-group-item">
+            Mortgage Loan Amount: ${{ Math.round(100) }}
           </li>
           <li class="list-group-item">
-            Total Mortgage Payment: ${{ Math.round(totalMonthlyMortgage) }}
+            Principal & Interest (P&I) Payment: ${{ Math.round(100) }}
           </li>
-          <p>EXPECTED FUNDS NEEDED AT CLOSING:</p>
+          <li class="list-group-item">Interest Rate: ${{ Math.round(100) }}</li>
+          <li class="list-group-item">Term: ${{ Math.round(100) }}</li>
           <li class="list-group-item">
-            Total Cash Required: ${{ Math.round(downPayment + closingCost) }}
-          </li>
-          <li class="list-group-item">
-            Down Payment: ${{ Math.round(downPayment) }}
+            Date loan closed: ${{ Math.round(100) }}
           </li>
           <li class="list-group-item">
-            Closing Costs: ${{ Math.round(closingCost) }}
-          </li>
-          <p>INFORMATION ABOUT YOUR POTENTIAL MORTGAGE:</p>
-          <li class="list-group-item">
-            Mortgage Loan Amount: ${{ Math.round(mortgageLoanAmount) }}
-          </li>
-          <li class="list-group-item">Term: ${{ Math.round(term) }}</li>
-          <li class="list-group-item">
-            Total Mortgage Payment: ${{ Math.round(totalMonthlyMortgage) }}
+            Months since loan closed: ${{ Math.round(100) }}
           </li>
           <li class="list-group-item">
-            Principal & Interest (P&I) Payment: ${{
-              Math.round(monthlyPrincipalInterestPayment)
+            Number of payments remaining: ${{ Math.round(100) }}
+          </li>
+          <li class="list-group-item">
+            Principal balance estimate (as of today): ${{ Math.round(100) }}
+          </li>
+          <li class="list-group-item">
+            Principal & interest (P&I) balance estimate: ${{ Math.round(100) }}
+          </li>
+          <p>
+            INFORMATION ABOUT YOUR POTENTIAL MORTGAGE AFTER YOUR EXTRA PAYMENT:
+          </p>
+          <li v-if="tab === 0" class="list-group-item">
+            One-time extra payment: ${{ Math.round(100) }}
+          </li>
+          <li v-if="tab === 1" class="list-group-item">
+            Monthly extra payment: ${{ Math.round(100) }}
+          </li>
+          <li v-if="tab === 1" class="list-group-item">
+            New monthly total payment: ${{ Math.round(100) }}
+          </li>
+          <li class="list-group-item">
+            New number of payments remaining: ${{ Math.round(100) }}
+          </li>
+          <li class="list-group-item">
+            New total principal & interest (P&I) remaining: ${{
+              Math.round(100)
             }}
           </li>
-          <li class="list-group-item">
-            Property Taxes: ${{ Math.round(monthlyPropertyTax) }}
-          </li>
-          <li class="list-group-item">
-            Homeowners Insurance: ${{ Math.round(monthlyHoi) }}
-          </li>
-          <li class="list-group-item">
-            PMI: ${{ Math.round(monthlyMortgageInsurance) }}
-          </li>
-          <li class="list-group-item">HOA Fees: ${{ Math.round(hoa) }}</li>
-          <li class="list-group-item">LTV: ${{ Math.round(ltv) }}</li>
         </ul>
       </div>
       <button
@@ -502,10 +453,8 @@
       </button>
       <p>
         These calculator results are estimates based on your inputs. Contact a
-        bank, credit union, housing advisor, or lender to determine your loan
-        eligibility and accurate costs. Fannie Mae does not offer mortgage loans
-        to consumers and this in no way indicates approval or financing of a
-        mortgage loan.
+        bank, credit union, housing advisor, or lender to determine accurate
+        figures.
       </p>
     </div>
   </div>
@@ -514,9 +463,13 @@
 
 <script>
 import { required, between } from "vuelidate/lib/validators";
+import Datepicker from "vuejs-datepicker";
 
 export default {
   name: "PurchaseCalculator",
+  components: {
+    Datepicker
+  },
   data() {
     return this.init();
   },
@@ -546,7 +499,7 @@ export default {
         oneTimeExtraPayment: 1000,
         monthlyExtraPayment: 100,
         mortgageLoanAmount: 190000,
-        dateLoanClosed: 190000,
+        loanCloseDate: new Date(),
         interestRatePercent: 4.25,
         term: 30,
         errorMsgPre: "Please enter a valid amount between",
@@ -570,23 +523,6 @@ export default {
         return 0;
       }
       return n;
-    },
-    updateFees() {
-      let dynamicHoa = Math.round((this.homePurchasePrice * 0.0025) / 12);
-      this.hoa =
-        dynamicHoa > this.$v.hoa.$params.between.max
-          ? this.$v.hoa.$params.between.max
-          : dynamicHoa;
-      let dynamicHoi = Math.round(this.homePurchasePrice * 0.0075);
-      this.hoi =
-        dynamicHoi > this.$v.hoi.$params.between.max
-          ? this.$v.hoi.$params.between.max
-          : dynamicHoi;
-      let dynamicTax = Math.round(this.homePurchasePrice * 0.0125);
-      this.propertyTax =
-        dynamicTax < this.$v.propertyTax.$params.between.min
-          ? this.$v.propertyTax.$params.between.min
-          : dynamicTax;
     }
   }
 };
