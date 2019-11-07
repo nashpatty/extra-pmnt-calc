@@ -28,7 +28,8 @@
                       <a
                         @click="tab = 0"
                         id="nav-one-time-info-tab"
-                        class="nav-item nav-link active"
+                        class="nav-item nav-link"
+                        :class="{ active: tab === 0 }"
                         data-toggle="tab"
                         href="#nav-one-time-info"
                         role="tab"
@@ -40,6 +41,7 @@
                         @click="tab = 1"
                         id="nav-monthly-info-tab"
                         class="nav-item nav-link"
+                        :class="{ active: tab === 1 }"
                         data-toggle="tab"
                         href="#nav-monthly-info"
                         role="tab"
@@ -80,8 +82,8 @@
                             v-model.number="oneTimeExtraPayment"
                             type="range"
                             class="custom-range"
-                            min="10000"
-                            max="1000000"
+                            min="0"
+                            max="10000"
                           />
                           <div class="invalid-feedback">
                             <span
@@ -137,8 +139,8 @@
                             v-model.number="monthlyExtraPayment"
                             type="range"
                             class="custom-range"
-                            min="10000"
-                            max="1000000"
+                            min="0"
+                            max="10000"
                           />
                           <div class="invalid-feedback">
                             <span
@@ -322,12 +324,12 @@
                       >
                         <ul class="list-group">
                           <li class="list-group-item">
-                            Potential Savings: ${{ Math.round(100) }}
+                            Potential Savings:
+                            {{ currencyFormat(oneTimeSavings) }}
                           </li>
                           <li class="list-group-item">
-                            With a one-time extra payment of: ${{
-                              Math.round(100)
-                            }}
+                            With a one-time extra payment of:
+                            {{ currencyFormat(oneTimeExtraPayment) }}
                           </li>
                         </ul>
                       </div>
@@ -340,17 +342,16 @@
                       >
                         <ul class="list-group">
                           <li class="list-group-item">
-                            Potential Savings: ${{ Math.round(100) }}
+                            Potential Savings:
+                            {{ currencyFormat(monthlySavings) }}
                           </li>
                           <li class="list-group-item">
-                            With an extra monthly payment of: ${{
-                              Math.round(100)
-                            }}
+                            With an extra monthly payment of:
+                            {{ currencyFormat(monthlyExtraPayment) }}
                           </li>
                           <li class="list-group-item">
-                            Loan repayment period reduced by: ${{
-                              Math.round(100)
-                            }}
+                            Loan repayment period reduced by:
+                            {{ currencyFormat(100) }}
                           </li>
                         </ul>
                       </div>
@@ -388,59 +389,77 @@
         <ul class="list-group">
           <p>YOU CAN EXPECT TO SAVE:</p>
           <li class="list-group-item">
-            Total savings in interest: ${{ Math.round(100) }}
+            Total savings in interest:
+            {{
+              tab === 0
+                ? currencyFormat(oneTimeSavings)
+                : currencyFormat(monthlySavings)
+            }}
           </li>
           <li class="list-group-item">
             By paying an extra principal payment
           </li>
           <li v-if="tab === 0" class="list-group-item">
-            One-time: ${{ Math.round(100) }}
+            One-time: {{ currencyFormat(oneTimeExtraPayment) }}
           </li>
           <li v-if="tab === 1" class="list-group-item">
-            Monthly: ${{ Math.round(100) }}
+            Monthly: {{ currencyFormat(monthlyExtraPayment) }}
           </li>
           <p>INFORMATION ABOUT YOUR CURRENT MORTGAGE:</p>
           <li class="list-group-item">
-            Mortgage Loan Amount: ${{ Math.round(100) }}
+            Mortgage Loan Amount:
+            {{ currencyFormat(mortgageLoanAmount) }}
           </li>
           <li class="list-group-item">
-            Principal & Interest (P&I) Payment: ${{ Math.round(100) }}
-          </li>
-          <li class="list-group-item">Interest Rate: ${{ Math.round(100) }}</li>
-          <li class="list-group-item">Term: ${{ Math.round(100) }}</li>
-          <li class="list-group-item">
-            Date loan closed: ${{ Math.round(100) }}
+            Principal & Interest (P&I) Payment:
+            {{ currencyFormat(monthlyPrincipalAndInterestPayment) }}
           </li>
           <li class="list-group-item">
-            Months since loan closed: ${{ Math.round(100) }}
+            Interest Rate: {{ interestRatePercent }}%
+          </li>
+          <li class="list-group-item">Term: {{ term }}</li>
+          <li class="list-group-item">
+            Date loan closed: {{ loanCloseDate.toLocaleDateString("en-US") }}
           </li>
           <li class="list-group-item">
-            Number of payments remaining: ${{ Math.round(100) }}
+            Months since loan closed: {{ monthsSinceLoanClose }}
           </li>
           <li class="list-group-item">
-            Principal balance estimate (as of today): ${{ Math.round(100) }}
+            Number of payments remaining: {{ remainingPayments }} ({{
+              Math.round(remainingPayments / 12)
+            }}
+            years)
           </li>
           <li class="list-group-item">
-            Principal & interest (P&I) balance estimate: ${{ Math.round(100) }}
+            Principal balance estimate (as of today):
+            {{ currencyFormat(remainingPrincipalAndInterest) }}
+          </li>
+          <li class="list-group-item">
+            Principal & interest (P&I) balance estimate:
+            {{ currencyFormat(principalBalanceEstimate) }}
           </li>
           <p>
             INFORMATION ABOUT YOUR POTENTIAL MORTGAGE AFTER YOUR EXTRA PAYMENT:
           </p>
           <li v-if="tab === 0" class="list-group-item">
-            One-time extra payment: ${{ Math.round(100) }}
+            One-time extra payment: {{ currencyFormat(oneTimeExtraPayment) }}
           </li>
           <li v-if="tab === 1" class="list-group-item">
-            Monthly extra payment: ${{ Math.round(100) }}
+            Monthly extra payment: {{ currencyFormat(monthlyExtraPayment) }}
           </li>
           <li v-if="tab === 1" class="list-group-item">
-            New monthly total payment: ${{ Math.round(100) }}
+            New monthly total payment: {{ currencyFormat(newMonthlyPayment) }}
           </li>
           <li class="list-group-item">
-            New number of payments remaining: ${{ Math.round(100) }}
+            New number of payments remaining:
+            {{ currencyFormat(remainingPayments) }}
           </li>
           <li class="list-group-item">
-            New total principal & interest (P&I) remaining: ${{
-              Math.round(100)
+            New total principal & interest (P&I) remaining:
+            {{
+              tab === 0
+                ? currencyFormat(newRemainingOneTimePrincipalAndInterest)
+                : currencyFormat(newRemainingMonthlyPrincipalAndInterest)
             }}
           </li>
         </ul>
@@ -464,6 +483,14 @@
 <script>
 import { required, between } from "vuelidate/lib/validators";
 import Datepicker from "vuejs-datepicker";
+
+const today = new Date();
+const currency = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 0,
+  minimumFractionDigits: 0,
+  style: "currency",
+  currency: "USD"
+});
 
 export default {
   name: "PurchaseCalculator",
@@ -491,7 +518,62 @@ export default {
       between: between(2.5, 11)
     }
   },
-  computed: {},
+  computed: {
+    monthlyPrincipalAndInterestPayment() {
+      return this.pmt(
+        this.interestRatePercent / 100 / 12,
+        this.term * 12,
+        this.mortgageLoanAmount
+      );
+    },
+    monthsSinceLoanClose() {
+      const monthTo = today.getMonth();
+      const yearTo = today.getFullYear();
+      const monthFrom = this.loanCloseDate.getMonth();
+      const yearFrom = this.loanCloseDate.getFullYear();
+      const diff = monthTo - monthFrom + (yearTo - yearFrom) * 12;
+      return diff < 0 ? 0 : diff;
+    },
+    remainingPayments() {
+      return this.term * 12 - this.monthsSinceLoanClose;
+    },
+    remainingPrincipalAndInterest() {
+      return this.monthlyPrincipalAndInterestPayment * this.remainingPayments;
+    },
+    principalBalanceEstimate() {
+      // TODO IPMT formula
+      return 10000;
+    },
+    newMonthlyPayment() {
+      return this.monthlyPrincipalAndInterestPayment + this.monthlyExtraPayment;
+    },
+    newRemainingPayments() {
+      // TODO NPER formula
+      return 500;
+    },
+    newRemainingMonthlyPrincipalAndInterest() {
+      return this.newMonthlyPayment * this.newRemainingPayments;
+    },
+    monthlySavings() {
+      return (
+        this.remainingPrincipalAndInterest -
+        this.newRemainingMonthlyPrincipalAndInterest
+      );
+    },
+    newRemainingOneTimePrincipalAndInterest() {
+      // TODO NPER formula
+      return 80000;
+    },
+    newPrincipalBalance() {
+      return this.principalBalanceEstimate - this.oneTimeExtraPayment;
+    },
+    oneTimeSavings() {
+      return (
+        this.remainingPrincipalAndInterest -
+        this.newRemainingOneTimePrincipalAndInterest
+      );
+    }
+  },
   methods: {
     init() {
       return {
@@ -507,13 +589,12 @@ export default {
       };
     },
     reset() {
-      this.homePurchasePrice = this.init().homePurchasePrice;
-      this.downPaymentPercent = this.init().downPaymentPercent;
+      this.oneTimeExtraPayment = this.init().oneTimeExtraPayment;
+      this.monthlyExtraPayment = this.init().monthlyExtraPayment;
+      this.mortgageLoanAmount = this.init().mortgageLoanAmount;
       this.interestRatePercent = this.init().interestRatePercent;
+      this.loanCloseDate = this.init().loanCloseDate;
       this.term = this.init().term;
-      this.hoi = this.init().hoi;
-      this.hoa = this.init().hoa;
-      this.propertyTax = this.init().propertyTax;
     },
     pmt(rate, period, pv) {
       return (pv * rate) / (1 - (1 + rate) ** (-1 * period));
@@ -523,6 +604,9 @@ export default {
         return 0;
       }
       return n;
+    },
+    currencyFormat(n) {
+      return currency.format(n);
     }
   }
 };
